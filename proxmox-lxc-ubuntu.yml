@@ -1,0 +1,86 @@
+# Inputs:
+#    proxmox_host  # ansible host running proxmox. Is also destination node: for container
+#    proxmox_user
+#    proxmox_pass
+#    vmid  # ID for lxc instance in proxmox
+#    admin_ssh_keys  # SSH keys to install for passwordless login
+
+---
+- hosts: lxc_guests
+  vars:
+    root_disk: '/rpool/data/subvol-{{ vmid }}-disk-0'
+  environment:
+    PROXMOX_HOST: '{{ proxmox_host }}'
+    PROXMOX_USER: '{{ proxmox_user }}@pam'
+    PROXMOX_PASSWORD: '{{ proxmox_pass }}'
+  gather_facts: false
+  tasks:
+    - name: create container
+      community.general.proxmox:
+        vmid: '{{ vmid }}'
+        node: '{{ proxmox_host }}'
+        hostname: '{{ inventory_hostname }}'
+        ostemplate: 'local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst'
+        cores: 2
+        memory: 4096
+        swap: 0
+        mounts: {rootfs: 'local-zfs:20'}
+        password: something
+        netif: {net0: 'name=eth0,ip={{ ansible_host }}/24,gw=192.168.0.1,bridge=vmbr0'}
+          #net0: 'name=eth0,ip=dhcp,ip6=dhcp,bridge=vmbr0,hwaddr={{ dns_mac }}'
+      delegate_to: localhost
+      register: container
+
+    - name: create .ssh directory
+      ansible.builtin.file:
+        path: '{{ root_disk }}/root/.ssh'
+        state: directory
+        mode: '700'
+        owner: root
+        group: root
+      delegate_to: '{{ proxmox_host }}'
+
+    - name: install ssh keys
+      ansible.builtin.copy:
+        content: '{{ admin_ssh_keys }}'
+        dest: '{{ root_disk }}/root/.ssh/authorized_keys'
+      delegate_to: '{{ proxmox_host }}'
+
+    - name: configure sshd
+      ansible.builtin.lineinfile:
+        path: '{{ root_disk }}/etc/ssh/sshd_config'
+        regexp: '^#?PermitRootLogin '
+        line: PermitRootLogin without-password
+      register: sshd_config
+      delegate_to: '{{ proxmox_host }}'
+
+    - name: start container
+      community.general.proxmox:
+        vmid: '{{ vmid }}'
+        state: started
+      delegate_to: localhost
+
+    - name: wait for ssh port
+      wait_for:
+        port: '{{ ansible_port | default(22) }}'
+        host: '{{ ansible_host }}'
+        timeout: 30  # seconds
+      delegate_to: localhost
+    
+    - name: scan new container for ssh keys
+      ansible.builtin.command: 'ssh-keyscan {{ ansible_host }} | sort'
+      register: key_scan
+      changed_when: false
+      delegate_to: localhost
+
+    - name: add keys to known_hosts
+      # Using blockinfile lets us easily replace all keys for a host if we recreate it.
+      ansible.builtin.blockinfile:
+        path: '~/.ssh/known_hosts'
+        block: '{{ key_scan.stdout }}'
+        marker: '# {mark} {{ ansible_host }} KEY BLOCK'
+        backup: yes
+      delegate_to: localhost
+    
+    - name: gather facts
+      ansible.builtin.setup:
