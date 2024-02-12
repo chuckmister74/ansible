@@ -8,7 +8,7 @@
 ---
 - hosts: lxc_guests
   vars:
-    root_disk: '/rpool/data/subvol-{{ vmid }}-disk-0'
+    root_disk: '/dev/mapper/pve-root-{{ vmid }}-disk-0'
   environment:
     PROXMOX_HOST: '{{ proxmox_host }}'
     PROXMOX_USER: '{{ proxmox_user }}@pam'
