@@ -6,5 +6,6 @@
     - name: Update apt cache and upgrade packages
       ansible.builtin.apt:
         update_cache: yes
-        upgrade: full
-
+        name: "*"
+        state: latest        
+        
