@@ -3,7 +3,7 @@
   hosts: all
   become: true
   tasks:
-    - name: Run the equivalent of "apt-get update" as a separate step
+    - name: Update apt cache and upgrade packages
       ansible.builtin.apt:
         update_cache: yes
         upgrade: full
