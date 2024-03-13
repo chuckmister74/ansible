@@ -1,5 +1,9 @@
-tasks:
-  - name: Run the equivalent of "apt-get update" as a separate step
-    ansible.builtin.apt:
-      update_cache: yes
-      upgrade: full
+---
+- name: Update and upgrade packages on debian based systems
+  hosts: all
+  tasks:
+    - name: Run the equivalent of "apt-get update" as a separate step
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: full
+
