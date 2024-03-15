@@ -5,7 +5,8 @@
   tasks:
     - name: Update apt cache and upgrade packages
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
+        force_apt_get: true
         name: "*"
         state: latest        
         
