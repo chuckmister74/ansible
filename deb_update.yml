@@ -1,5 +1,5 @@
 ---
-- name: Ping test
+- name: Update cache and packages
   hosts: all
   gather_facts: no
 
@@ -10,13 +10,13 @@
       state: latest
       force_apt_get: yes
 
-  - name: Remove apt lock file
-    ansible.builtin.file:
-      state: absent
-      path: "/var/lib/dpkg/lock-frontend"
+  # - name: Remove apt lock file
+  #   ansible.builtin.file:
+  #     state: absent
+  #     path: "/var/lib/dpkg/lock-frontend"
 
-  - name: Upgrade all packages to the latest version
-    ansible.builtin.apt:
-      upgrade: dist
-      force_apt_get: yes   
+  # - name: Upgrade all packages to the latest version
+  #   ansible.builtin.apt:
+  #     upgrade: dist
+  #     force_apt_get: yes   
         
