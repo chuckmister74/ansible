@@ -5,4 +5,4 @@
   
   tasks:
     - name: Ping to test connection
-      ansible.builtin.ping
+      ansible.builtin.ping:
