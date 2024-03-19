@@ -7,8 +7,8 @@
   
   tasks:
     - name: Update apt cache and upgrade packages
-      become: true
-      become_user: chuck
+      #become: true
+      #become_user: chuck
       ansible.builtin.apt:
         update_cache: true
         force_apt_get: true
