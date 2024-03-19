@@ -1,4 +1,9 @@
 ---
+- name: Ping test
+  hosts: all
+  gather_facts: no
+
+  tasks:
 - name: Update APT Cache
   ansible.builtin.apt:
     name: "*"
