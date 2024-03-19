@@ -8,6 +8,7 @@
   tasks:
     - name: Update apt cache and upgrade packages
       ansible.builtin.apt:
+        become: true
         update_cache: true
         force_apt_get: true
         name: "*"
