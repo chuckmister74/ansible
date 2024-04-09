@@ -1,14 +1,14 @@
 ---
- - name: Create a login user
-   ansible.builtin.user:
-     name: semaphore
-     password: $6$9iqu2wtAnASlzaz5$vUeNK/G5nk9D4dOfDRJ2lZ3HtjsVDiJtWGKpn8IohNO0l8gjjtTOe5MzjAm81rUQGpQlrGChkux8BR2yqqObx1
-     groups: # Empty by default, here we give it some groups
-       - docker
-       - sudo
-     state: present
-     shell: /bin/bash       # Defaults to /bin/bash
-     system: no             # Defaults to no
-     createhome: yes        # Defaults to yes
-     # home: /home/fideloper  # Defaults to /home/<username>
-     uid: 1001
+- name: Create a login user
+  ansible.builtin.user:
+    name: semaphore
+    password: $6$9iqu2wtAnASlzaz5$vUeNK/G5nk9D4dOfDRJ2lZ3HtjsVDiJtWGKpn8IohNO0l8gjjtTOe5MzjAm81rUQGpQlrGChkux8BR2yqqObx1
+    groups: # Empty by default, here we give it some groups
+      - docker
+      - sudo
+    state: present
+    shell: /bin/bash       # Defaults to /bin/bash
+    system: no             # Defaults to no
+    createhome: yes        # Defaults to yes
+    # home: /home/fideloper  # Defaults to /home/<username>
+    uid: 1001
