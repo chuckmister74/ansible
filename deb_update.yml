@@ -2,8 +2,8 @@
 - name: Update cache and packages
   hosts: all
   gather_facts: no
- # become_user: semaphore
   become: true
+  become_user: semaphore
 
   tasks:
   - name: Update APT Cache
