@@ -1,6 +1,6 @@
 - hosts: "*"
   become: yes
-  become_user: semaphore
+ # become_user: semaphore
   tasks:
     - name: apt
       apt:
