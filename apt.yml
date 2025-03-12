@@ -1,3 +1,4 @@
+---
 - hosts: "*"
   gather_facts: no
   become: true
